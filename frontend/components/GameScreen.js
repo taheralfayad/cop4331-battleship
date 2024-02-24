@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, TextInput, Button} from 'react-native';
 
 export default function App() {
-
-  const [board, setBoard] = useState([]);
+  const [Board, setBoard] = useState([]);
+  const [playerState, setPlayerState] = useState([]);
+  const [aiState, setAiState] = useState([]);
   const [gameOver, setGameOver] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [randomButtonDisabled, setRandomButtonDisabled] = useState(false);
   const [playerTurn, setPlayerTurn] = useState(true); // Player's turn initially
-
-
 
   useEffect(() => {
     if (!gameStarted) {
@@ -31,7 +30,7 @@ export default function App() {
     if (direction === "horizontal") {
       for (let i = 0; i < shipLength; i++) {
         if (col + i >= 10 || board[row][col + i] !== 0) {
-          return false;
+          return false; 
         }
       }
     } else {
@@ -77,49 +76,67 @@ export default function App() {
   };
 
   const setupGame = () => {
-    const newBoard = initializeBoard();
+    const pBoard = initializeBoard();
+    const aBoard = initializeBoard();
     const shipLengths = [5, 4, 3, 3, 2];
     shipLengths.forEach(length => {
-      placeShipsRandomly(newBoard, length);
+      placeShipsRandomly(pBoard, length);
+      placeShipsRandomly(aBoard, length);
     });
-    setBoard(newBoard);
+
+    setPlayerState(pBoard);
+    setAiState(aBoard);
+
+    setBoard(pBoard);
+
     setGameOver(false);
   };
 
-  const handleCellPress = (row, col) => {
-    if (gameOver || !playerTurn || board[row][col] === 'X' || board[row][col] === 'O') {
+  const handleCellPress = async (row, col) => {
+    if (gameOver || !playerTurn || aiState[row][col] === 'X' || aiState[row][col] === 'O') {
       return;
     }
 
-    const newBoard = [...board];
+    const newBoard = [...aiState];
     if (newBoard[row][col] === 1) {
       newBoard[row][col] = 'X'; // Hit
     } else {
       newBoard[row][col] = 'O'; // Miss
     }
-    setBoard(newBoard);
+    setAiState(newBoard);
+    setBoard(aiState);
 
     const isGameOver = newBoard.every(row => row.every(cell => cell !== 1));
     setGameOver(isGameOver);
+
+    await new Promise(r => setTimeout(r, 1000));
+
     setPlayerTurn(false); // AI's turn after player's move
   };
 
-  const playAI = () => {
+  const playAI = async () => {
     // AI's move logic - choosing random cell
     const row = getRandomNumber(0, 9);
     const col = getRandomNumber(0, 9);
 
-    if (board[row][col] === 1) {
-      board[row][col] = 'X'; // Hit
+    if (playerState[row][col] === 1) {
+      playerState[row][col] = 'X'; // Hit
     } else {
-      board[row][col] = 'O'; // Miss
+      playerState[row][col] = 'O'; // Miss
     }
 
-    const newBoard = [...board];
-    setBoard(newBoard);
+    const newBoard = [...playerState];
+    setPlayerState(newBoard);
+    setBoard(playerState);
+
+    await new Promise(r => setTimeout(r, 2000));
 
     const isGameOver = newBoard.every(row => row.every(cell => cell !== 1));
     setGameOver(isGameOver);
+
+    await new Promise(r => setTimeout(r, 1000)); // Delay the AI's move
+    setBoard(aiState)
+
     setPlayerTurn(true); // Player's turn after AI's move
   };
 
@@ -135,7 +152,8 @@ export default function App() {
 
   const handleRestartPress = () => {
     setGameStarted(false);
-    setBoard([]);
+    setAiState([]);
+    setPlayerState([]);
     setRandomButtonDisabled(false);
     setGameOver(false);
   };
@@ -161,7 +179,7 @@ export default function App() {
         </TouchableOpacity>
       }
       <View style={styles.board}>
-        {board.map((row, i) => (
+        {Board.map((row, i) => (
           <View key={i} style={styles.row}>
             {row.map((cell, j) => (
               <TouchableOpacity

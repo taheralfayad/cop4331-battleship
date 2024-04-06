@@ -1,7 +1,7 @@
-import { set } from 'mongoose';
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import ShipPlacementModal from './shipPlacementModal';
+import AIManager from './AIManager';
 
 const BOARD_SIZE = 10;
 const CELL_SIZE = 30;
@@ -12,6 +12,8 @@ const ships = [
   { name: "Submarine", size: 3 },
   { name: "Destroyer", size: 2 },
 ];
+
+const AILogic = new AIManager(BOARD_SIZE);
 
 const BattleshipBoard = () => {
   const [playerBoard, setPlayerBoard] = useState(Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(null)));
@@ -77,22 +79,7 @@ const BattleshipBoard = () => {
   }
 
   const onCellPress = (row, col, playerOrAI) => {
-    if(playerOrAI === 0 && currentPlayer === 1) {
-      setPlayerBoard(prevBoard => {
-        let newBoard = prevBoard.map(arr => arr.slice());
-        
-        if (newBoard[row][col] !== null && isAlphabetical(newBoard[row][col]) || newBoard[row][col] === 2) {
-          newBoard[row][col] = 2;
-          return newBoard;
-        }
-
-        newBoard[row][col] = 1;
-        
-        return newBoard;
-      });
-      setCurrentPlayer(0);
-    }
-    else if (playerOrAI === 1 && currentPlayer === 0) {
+    if (playerOrAI === 1 && currentPlayer === 0) {
       setAiBoard(prevBoard => {
         let newBoard = prevBoard.map(arr => arr.slice());
         
@@ -106,8 +93,14 @@ const BattleshipBoard = () => {
         return newBoard;
       });
       setCurrentPlayer(1);
+      handleAIMove();
     }
   
+  };
+
+  const handleAIMove = () => {
+    setPlayerBoard(AILogic.getNextMove(playerBoard));
+    setCurrentPlayer(0);
   };
 
 

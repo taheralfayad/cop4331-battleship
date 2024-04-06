@@ -21,6 +21,7 @@ class AIManager {
             hit: false,
             direction: null,
             origin: null,
+            length: 0,
         }
 
         // Generate potential moves
@@ -35,6 +36,7 @@ class AIManager {
         let newBoard = board.map(arr => arr.slice());
         let newRow, newCol;
         
+        // Not on a thread: get a random move
         if (!this.onThread.hit) {
             return this.getRandomMove(newBoard);
         }
@@ -77,15 +79,17 @@ class AIManager {
         //remove the move from potential moves
         this.potentialMoves = this.potentialMoves.filter(move => !(move[0] === newRow && move[1] === newCol));
 
+        // Hit/Miss logic for thread move
         if (newBoard[newRow][newCol] !== null && isAlphabetical(newBoard[newRow][newCol])) {
             newBoard[newRow][newCol] = 2;
             this.lastHit = [newRow, newCol];
             this.onThread.hit = true;
+            this.onThread.length++;
         } else {
             newBoard[newRow][newCol] = 1;
 
-            if (isEqual(this.onThread.origin, this.lastHit)) {
-        
+            // If the thread is only 1 cell long, try all directions before moving on
+            if (this.onThread.length == 1) {
                 for (let [dx, dy] of directions) {
                     let [ox, oy] = this.onThread.origin;
                     let r = ox + dx;
@@ -93,13 +97,36 @@ class AIManager {
                     if (this.checkValidMove(r, c)) {
                         this.onThread.direction = [dx, dy];
                         this.onThread.hit = true;
-                        return newBoard;
+                        return newBoard
                     }
+                }
+            }
+            
+            // If the thread is longer than 1 cell, check if we can flip direction
+            if (this.onThread.length < Math.max(...this.remainingShips)) {
+
+                // Reverse direction
+                let [dx, dy] = [-this.onThread.direction[0], -this.onThread.direction[1]];
+                let [ox, oy] = this.onThread.origin;
+                // Ensure the cell opposite direction from origin is valid
+                let r = ox + dx;
+                let c = oy + dy;
+                if (this.checkValidMove(r, c)) {
+                    this.onThread.direction = [dx, dy];
+                    this.onThread.hit = true;
+                    this.lastHit = [ox, oy];
+                    return newBoard;
+                }
+
+                // THREAD IS FINISHED SHIP IS SUNK
+                else {
+                    this.remainingShips = this.remainingShips.filter(ship => ship != this.onThread.length);
                 }
             }
 
             this.onThread.hit = false;
             this.onThread.direction = null;
+            this.onThread.length = 0;
         }
 
         return newBoard;       
@@ -118,6 +145,7 @@ class AIManager {
             this.lastHit = [row, col];
             this.onThread.hit = true;
             this.onThread.origin = [row, col];
+            this.onThread.length = 1;
             return newBoard;
         }
 

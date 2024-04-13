@@ -92,8 +92,8 @@ const ShipPlacementModal = ({ onClose, playerBoard, setPlayerBoard, ships, visib
         const randomOrientation = Math.random() < 0.5 ? 'horizontal' : 'vertical';
         const shipCoverage = calculateShipCoverage([randomRow, randomCol], ship.size, randomOrientation);
         if (isShipPlacementValid([randomRow, randomCol], ship.size, randomOrientation)) {
-          shipCoverage.forEach(([row, col]) => {
-            board[row][col] = ship.name.substring(0, 2).toUpperCase();
+          shipCoverage.forEach(([row, col]) => { board[row][col] = 
+            ship.name.substring(0, 2).toUpperCase();
           });
           setPlacedShips([...placedShips, ship.name]);
           shipPlaced = true;
@@ -166,7 +166,7 @@ const ShipPlacementModal = ({ onClose, playerBoard, setPlayerBoard, ships, visib
     >
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
-          <Text style={styles.modalText}>Select Ship to Place:</Text>
+          <Text style={styles.modalText}>Select a ship to place:</Text>
           <FlatList
             data={ships}
             renderItem={({ item }) => {
@@ -183,7 +183,7 @@ const ShipPlacementModal = ({ onClose, playerBoard, setPlayerBoard, ships, visib
                   onPress={() => handleSelectShip(item)}
                   disabled={isShipPlaced} // Optionally disable the button
                 >
-                  <Text style={isShipPlaced ? styles.placedShipText : {}}>{item.name}</Text>
+                <Text style={[{ textAlign: 'center' }, isShipPlaced ? styles.placedShipText : {}]}>{item.name}</Text>
                 </TouchableOpacity>
               );
             }}
@@ -216,6 +216,8 @@ const ShipPlacementModal = ({ onClose, playerBoard, setPlayerBoard, ships, visib
           onPress={() => {
             if (placedShips.length === 0) {
               setBoard(placeAllShips());
+            } else if (placedShips.length === 5) { 
+              alert("All ships have already been placed.");
             } else {
               alert("You must finish placing all ships now.");
             }
@@ -245,10 +247,11 @@ const ShipPlacementModal = ({ onClose, playerBoard, setPlayerBoard, ships, visib
 const styles = StyleSheet.create({
 placedShip: {
   backgroundColor: "#f0f0f0",
-  borderColor: "#ccc", 
+  borderColor: 'white', 
 },
 placedShipText: {
-  color: "#ccc", 
+  color: 'white', 
+  textAlign: "center",
 },
 
 selectedShip: {
@@ -262,13 +265,15 @@ selectedShip: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 22
   },
   modalView: {
-    margin: 20,
+    position: 'sticky',
+    top: 20, // Adjust as needed
+    left: 20, // Adjust as needed
+    justifyContent: "center",
     backgroundColor: "white",
     borderRadius: 20,
-    padding: 35,
+    padding: 40,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
@@ -284,7 +289,7 @@ selectedShip: {
     textAlign: "center"
   },
   shipButton: {
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#f0f0f0", 
     padding: 10,
     marginVertical: 5,
     borderRadius: 5
@@ -297,19 +302,23 @@ selectedShip: {
     borderWidth: 1,
     borderColor: '#ccc',
     margin: 3,
+    color: 'white',
   },
   orientationContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginVertical: 10,
+    marginVertical: 5,
+    color: 'white',
   },
   orientationButton: {
     padding: 10,
     backgroundColor: '#f0f0f0',
     borderRadius: 5,
+    color: 'white',
   },
   selectedOrientation: {
     backgroundColor: '#2196F3',
+    color: 'white',
   },
   placeButton: {
     backgroundColor: "#2196F3",
@@ -331,7 +340,7 @@ selectedShip: {
   occupiedSquare: {
     backgroundColor: "#808080",
   },
-  
+
 });
 
 export default ShipPlacementModal;

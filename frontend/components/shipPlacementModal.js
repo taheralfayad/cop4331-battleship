@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { View, Modal, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions, ScrollView } from 'react-native';
+import { View, Modal, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions, ScrollView, LogBox } from 'react-native';
+
+LogBox.ignoreLogs([
+  'VirtualizedLists should never be nested',
+]);
+
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;

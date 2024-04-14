@@ -9,7 +9,7 @@ const ships = [
   { name: "Destroyer", size: 2 },
 ];
 
-const ShipPlacementModal = ({ onClose, playerBoard, setPlayerBoard, ships, visible}) => {
+const ShipPlacementModal = ({ onClose, placeAllShips, setPlayerBoard, ships, visible}) => {
   const [selectedShip, setSelectedShip] = useState(null);
   const [orientation, setOrientation] = useState('horizontal');
   const [selectedSquare, setSelectedSquare] = useState(null);
@@ -83,25 +83,9 @@ const ShipPlacementModal = ({ onClose, playerBoard, setPlayerBoard, ships, visib
     }
   };
   
-  const placeAllShips = () => {
-    ships.forEach(ship => {
-      let shipPlaced = false;
-      while (!shipPlaced) {
-        const randomRow = Math.floor(Math.random() * 10);
-        const randomCol = Math.floor(Math.random() * 10);
-        const randomOrientation = Math.random() < 0.5 ? 'horizontal' : 'vertical';
-        const shipCoverage = calculateShipCoverage([randomRow, randomCol], ship.size, randomOrientation);
-        if (isShipPlacementValid([randomRow, randomCol], ship.size, randomOrientation)) {
-          shipCoverage.forEach(([row, col]) => { board[row][col] = 
-            ship.name.substring(0, 2).toUpperCase();
-          });
-          setPlacedShips([...placedShips, ship.name]);
-          shipPlaced = true;
-        }
-      }
-    });
-    setBoard([...board]);
-    setPlayerBoard([...board]);
+  const randomizeShips = () => {
+    setBoard(placeAllShips());
+    setPlayerBoard(placeAllShips());
     onClose();
   };
 
@@ -215,7 +199,7 @@ const ShipPlacementModal = ({ onClose, playerBoard, setPlayerBoard, ships, visib
           style={styles.closeButton}
           onPress={() => {
             if (placedShips.length === 0) {
-              setBoard(placeAllShips());
+              randomizeShips();
             } else if (placedShips.length === 5) { 
               alert("All ships have already been placed.");
             } else {

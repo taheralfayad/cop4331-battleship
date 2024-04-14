@@ -32,13 +32,13 @@ class AIManager {
         }
     }
 
-    getNextMove = (board) => {
+    getNextMove = (board, wasLastMoveHit) => {
         let newBoard = board.map(arr => arr.slice());
         let newRow, newCol;
         
         // Not on a thread: get a random move
         if (!this.onThread.hit) {
-            return this.getRandomMove(newBoard);
+            return this.getRandomMove(newBoard, wasLastMoveHit);
         }
 
         let [last_row, last_col] = this.lastHit;
@@ -84,6 +84,7 @@ class AIManager {
             newBoard[newRow][newCol] = 2;
             this.lastHit = [newRow, newCol];
             this.onThread.hit = true;
+            wasLastMoveHit.hit = true;
             this.onThread.length++;
         } else {
             newBoard[newRow][newCol] = 1;
@@ -132,7 +133,7 @@ class AIManager {
         return newBoard;       
     }
 
-    getRandomMove = (board) => {
+    getRandomMove = (board, wasLastMoveHit) => {
         let newBoard = board.map(arr => arr.slice());
         const randomIndex = Math.floor(Math.random() * this.potentialMoves.length);
         const [row, col] = this.potentialMoves[randomIndex];
@@ -144,6 +145,7 @@ class AIManager {
             newBoard[row][col] = 2;
             this.lastHit = [row, col];
             this.onThread.hit = true;
+            wasLastMoveHit.hit = true;
             this.onThread.origin = [row, col];
             this.onThread.length = 1;
             return newBoard;

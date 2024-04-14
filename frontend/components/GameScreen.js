@@ -26,7 +26,7 @@ const BattleshipBoard = () => {
   };
 
   useEffect(() => {
-    setAiBoard(placeAllAIShips());
+    setAiBoard(placeAllShips());
   }, []);
 
   const initializeBoard = () => Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(null));
@@ -66,7 +66,7 @@ const BattleshipBoard = () => {
     }
   };
   
-  const placeAllAIShips = () => {
+  const placeAllShips = () => {
     const board = initializeBoard();
     ships.forEach(ship => {
       placeShip(board, ship);
@@ -85,23 +85,39 @@ const BattleshipBoard = () => {
         
         if (newBoard[row][col] !== null && isAlphabetical(newBoard[row][col]) || newBoard[row][col] === 2) {
           newBoard[row][col] = 2;
+
           return newBoard;
         }
-
-        newBoard[row][col] = 1;
-        
+        else if (newBoard[row][col] === 1) {
+          return newBoard;
+        }
+        else {
+          setCurrentPlayer(1);
+          handleAIMove();
+          newBoard[row][col] = 1;     
+        }
+   
         return newBoard;
       });
-      setCurrentPlayer(1);
-      handleAIMove();
     }
-  
   };
 
   const handleAIMove = () => {
-    setPlayerBoard(AILogic.getNextMove(playerBoard));
-    setCurrentPlayer(0);
+    setPlayerBoard(prevBoard => {
+      const wasLastMoveHit = { hit: false };
+      const newBoard = AILogic.getNextMove(prevBoard, wasLastMoveHit);
+      
+      if (wasLastMoveHit.hit) {
+        setCurrentPlayer(1);
+        setTimeout(() => handleAIMove(), 1000);
+      } else {
+        setCurrentPlayer(0); 
+      }
+  
+      return newBoard;
+    });
   };
+  
 
 
   const renderPlayerCell = (row, col) => {
@@ -112,7 +128,7 @@ const BattleshipBoard = () => {
           style={styles.cell}
           onPress={() => onCellPress(row, col, 0)}
         >
-          <Text>{playerBoard[row][col]}</Text>
+          <Text style={styles.whiteText}>{playerBoard[row][col]}</Text>
         </TouchableOpacity>);
       }
       else if(playerBoard[row][col] === 1) {
@@ -212,6 +228,7 @@ const BattleshipBoard = () => {
           playerBoard={playerBoard}
           setPlayerBoard={setPlayerBoard}
           ships={ships}
+          placeAllShips={placeAllShips}
         />
       )}
       {renderPlayerBoard()}
@@ -220,6 +237,10 @@ const BattleshipBoard = () => {
 };
 
 const styles = StyleSheet.create({
+  whiteText:
+  {
+    color: 'white',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',

@@ -85,6 +85,8 @@ class AIManager {
             this.lastHit = [newRow, newCol];
             this.onThread.hit = true;
             wasLastMoveHit.hit = true;
+            wasLastMoveHit.row = newRow;
+            wasLastMoveHit.col = newCol;
             this.onThread.length++;
         } else {
             newBoard[newRow][newCol] = 1;
@@ -146,6 +148,8 @@ class AIManager {
             this.lastHit = [row, col];
             this.onThread.hit = true;
             wasLastMoveHit.hit = true;
+            wasLastMoveHit.row = row;
+            wasLastMoveHit.col = col;
             this.onThread.origin = [row, col];
             this.onThread.length = 1;
             return newBoard;

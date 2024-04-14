@@ -2,16 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text, TouchableNativeFeedback, ImageBackground } from 'react-native';
 import ShipPlacementModal from './shipPlacementModal';
 import AIManager from './AIManager';
+import { set } from 'mongoose';
 
 const BOARD_SIZE = 10;
 const CELL_SIZE = 27;
 const ships = [
-  { name: "Carrier", size: 5 },
-  { name: "Battleship", size: 4 },
-  { name: "Cruiser", size: 3 },
-  { name: "Submarine", size: 3 },
-  { name: "Destroyer", size: 2 },
+  { name: "Carrier", size: 5, hits: 0 },
+  { name: "Battleship", size: 4, hits: 0 },
+  { name: "Cruiser", size: 3, hits: 0 },
+  { name: "Submarine", size: 3, hits: 0 },
+  { name: "Destroyer", size: 2, hits: 0 },
 ];
+
 
 const AILogic = new AIManager(BOARD_SIZE);
 
@@ -19,7 +21,53 @@ const BattleshipBoard = () => {
   const [playerBoard, setPlayerBoard] = useState(Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(null)));
   const [aiBoard, setAiBoard] = useState(Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(null)));
   const [currentPlayer, setCurrentPlayer] = useState(0);
+  const [playerShips, setPlayerShips] = useState(ships.map(ship => ({ ...ship })));
+  const [aiShips, setAiShips] = useState(ships.map(ship => ({ ...ship })));
   const [gameStarted, setGameStarted] = useState(false);
+
+  useEffect(() => {
+    if (gameStarted) {
+      checkGameOver();
+    }
+  }, [playerShips, aiShips]);
+
+  const allShipsSunk = (ships) => {
+    return ships.every(ship => ship.hits >= ship.size);
+  };
+
+  const updateShip = (playerOrAI, shipName) => {
+    if (playerOrAI === 0) {
+      const updatedShips = playerShips.map(ship => {
+        if (ship.name === shipName) {
+          return { ...ship, hits: ship.hits + 1 }; 
+        }
+        return ship;
+      });
+      setPlayerShips(updatedShips);
+    } else {
+      const updatedShips = aiShips.map(ship => {
+        if (ship.name === shipName) {
+          return { ...ship, hits: ship.hits + 1 };
+        }
+        return ship;
+      });
+      setAiShips(updatedShips);
+    }
+  }
+  
+
+  const checkGameOver = () => {
+    if (allShipsSunk(playerShips)) {
+      alert('AI Wins!');
+      setGameStarted(false);
+      setAiBoard(placeAllShips());
+    } else if (allShipsSunk(aiShips)) {
+      alert('Player Wins!');
+      setGameStarted(false);
+      setAiBoard(placeAllShips());
+    }
+  };
+  
 
   const toggleModal = () => {
     setGameStarted(!gameStarted);
@@ -56,9 +104,9 @@ const BattleshipBoard = () => {
       if (checkIfFits(board, row, col, ship.size, isHorizontal)) {
         for (let i = 0; i < ship.size; i++) {
           if (isHorizontal) {
-            board[row][col + i] = ship.name[0];
+            board[row][col + i] = ship.name.substring(0, 2).toUpperCase();
           } else {
-            board[row + i][col] = ship.name[0];
+            board[row + i][col] = ship.name.substring(0, 2).toUpperCase();
           }
         }
         placed = true;
@@ -79,35 +127,60 @@ const BattleshipBoard = () => {
   }
 
   const onCellPress = (row, col, playerOrAI) => {
-    if (playerOrAI === 1 && currentPlayer === 0) {
-      setAiBoard(prevBoard => {
-        let newBoard = prevBoard.map(arr => arr.slice());
-        
-        if (newBoard[row][col] !== null && isAlphabetical(newBoard[row][col]) || newBoard[row][col] === 2) {
-          newBoard[row][col] = 2;
+    if (playerOrAI === 1 && currentPlayer === 0) {  
+        setAiBoard(prevBoard => {
+            let newBoard = prevBoard.map(arr => arr.slice());
+            console.log(newBoard[row][col])
 
-          return newBoard;
-        }
-        else if (newBoard[row][col] === 1) {
-          return newBoard;
-        }
-        else {
-          setCurrentPlayer(1);
-          handleAIMove();
-          newBoard[row][col] = 1;     
-        }
-   
-        return newBoard;
-      });
+            if (newBoard[row][col] != null && isAlphabetical(newBoard[row][col])) {
+              let shipName = ""
+              if (newBoard[row][col] === 'CA') {
+                shipName = "Carrier";
+              } else if (newBoard[row][col] === 'BA') {
+                shipName = "Battleship";
+              } else if (newBoard[row][col] === 'CR') {
+                shipName = "Cruiser";
+              } else if (newBoard[row][col] === 'SU') {
+                shipName = "Submarine";
+              } else if (newBoard[row][col] === 'DE') {
+                shipName = "Destroyer";
+              }
+                newBoard[row][col] = 2; 
+                updateShip(1, shipName);
+            } 
+            else if(newBoard[row][col] === 1 || newBoard[row][col] === 2) {
+              return newBoard;
+            }
+            else {
+                newBoard[row][col] = 1;
+                setCurrentPlayer(1);
+                setTimeout(() => handleAIMove(), 1000);
+            }
+
+            return newBoard;
+        });
     }
-  };
+};
 
   const handleAIMove = () => {
     setPlayerBoard(prevBoard => {
-      const wasLastMoveHit = { hit: false };
+      const wasLastMoveHit = { hit: false, row: null, col: null};
       const newBoard = AILogic.getNextMove(prevBoard, wasLastMoveHit);
       
       if (wasLastMoveHit.hit) {
+        let shipName = ""
+        if (newBoard[wasLastMoveHit.row][wasLastMoveHit.col] === 'CA') {
+          shipName = "Carrier";
+        } else if (newBoard[wasLastMoveHit.row][wasLastMoveHit.col] === 'BA') {
+          shipName = "Battleship";
+        } else if (newBoard[wasLastMoveHit.row][wasLastMoveHit.col] === 'CR') {
+          shipName = "Cruiser";
+        } else if (newBoard[wasLastMoveHit.row][wasLastMoveHit.col] === 'SU') {
+          shipName = "Submarine";
+        } else if (newBoard[wasLastMoveHit.row][wasLastMoveHit.col] === 'DE') {
+          shipName = "Destroyer";
+        }
+        updateShip(0, shipName);
         setCurrentPlayer(1);
         setTimeout(() => handleAIMove(), 1000);
       } else {

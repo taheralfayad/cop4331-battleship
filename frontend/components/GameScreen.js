@@ -37,23 +37,26 @@ const BattleshipBoard = () => {
 
   const updateShip = (playerOrAI, shipName) => {
     if (playerOrAI === 0) {
-      const updatedShips = playerShips.map(ship => {
-        if (ship.name === shipName) {
-          return { ...ship, hits: ship.hits + 1 }; 
-        }
-        return ship;
-      });
-      setPlayerShips(updatedShips);
+        setPlayerShips(currentShips => {
+            return currentShips.map(ship => {
+                if (ship.name === shipName) {
+                    const updatedShip = { ...ship, hits: ship.hits + 1 };
+                    return updatedShip;
+                }
+                return ship;
+            });
+        });
     } else {
-      const updatedShips = aiShips.map(ship => {
-        if (ship.name === shipName) {
-          return { ...ship, hits: ship.hits + 1 };
-        }
-        return ship;
-      });
-      setAiShips(updatedShips);
+        setAiShips(currentShips => {
+            return currentShips.map(ship => {
+                if (ship.name === shipName) {
+                    return { ...ship, hits: ship.hits + 1 };
+                }
+                return ship;
+            });
+        });
     }
-  }
+}
   
 
   const checkGameOver = () => {
@@ -61,10 +64,14 @@ const BattleshipBoard = () => {
       alert('AI Wins!');
       setGameStarted(false);
       setAiBoard(placeAllShips());
+      setPlayerShips(ships.map(ship => ({ ...ship })));
+      setAiShips(ships.map(ship => ({ ...ship })));
     } else if (allShipsSunk(aiShips)) {
       alert('Player Wins!');
       setGameStarted(false);
       setAiBoard(placeAllShips());
+      setPlayerShips(ships.map(ship => ({ ...ship })));
+      setAiShips(ships.map(ship => ({ ...ship })));
     }
   };
   
@@ -130,7 +137,6 @@ const BattleshipBoard = () => {
     if (playerOrAI === 1 && currentPlayer === 0) {  
         setAiBoard(prevBoard => {
             let newBoard = prevBoard.map(arr => arr.slice());
-            console.log(newBoard[row][col])
 
             if (newBoard[row][col] != null && isAlphabetical(newBoard[row][col])) {
               let shipName = ""
@@ -162,34 +168,38 @@ const BattleshipBoard = () => {
     }
 };
 
-  const handleAIMove = () => {
-    setPlayerBoard(prevBoard => {
-      const wasLastMoveHit = { hit: false, row: null, col: null};
+const handleAIMove = () => {
+  setPlayerBoard(prevBoard => {
+      const wasLastMoveHit = { hit: false, row: null, col: null };
       const newBoard = AILogic.getNextMove(prevBoard, wasLastMoveHit);
       
       if (wasLastMoveHit.hit) {
-        let shipName = ""
-        if (newBoard[wasLastMoveHit.row][wasLastMoveHit.col] === 'CA') {
-          shipName = "Carrier";
-        } else if (newBoard[wasLastMoveHit.row][wasLastMoveHit.col] === 'BA') {
-          shipName = "Battleship";
-        } else if (newBoard[wasLastMoveHit.row][wasLastMoveHit.col] === 'CR') {
-          shipName = "Cruiser";
-        } else if (newBoard[wasLastMoveHit.row][wasLastMoveHit.col] === 'SU') {
-          shipName = "Submarine";
-        } else if (newBoard[wasLastMoveHit.row][wasLastMoveHit.col] === 'DE') {
-          shipName = "Destroyer";
-        }
-        updateShip(0, shipName);
-        setCurrentPlayer(1);
-        setTimeout(() => handleAIMove(), 1000);
+          let shipName = "";
+          let hitLocation = prevBoard[wasLastMoveHit.row][wasLastMoveHit.col];
+
+          switch(hitLocation) {
+              case 'CA': shipName = "Carrier"; break;
+              case 'BA': shipName = "Battleship"; break;
+              case 'CR': shipName = "Cruiser"; break;
+              case 'SU': shipName = "Submarine"; break;
+              case 'DE': shipName = "Destroyer"; break;
+              default: console.error("Unknown ship code:", hitLocation);
+          }
+
+          if (shipName) {
+              updateShip(0, shipName);
+          }
+
+          setCurrentPlayer(1);
+          setTimeout(() => handleAIMove(), 1000);
       } else {
-        setCurrentPlayer(0); 
+          setCurrentPlayer(0);
       }
-  
+
       return newBoard;
-    });
-  };
+  });
+};
+
   
 
 

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, TouchableNativeFeedback, ImageBackground } from 'react-native';
 import ShipPlacementModal from './shipPlacementModal';
 import AIManager from './AIManager';
 
 const BOARD_SIZE = 10;
-const CELL_SIZE = 30;
+const CELL_SIZE = 27;
 const ships = [
   { name: "Carrier", size: 5 },
   { name: "Battleship", size: 4 },
@@ -26,8 +26,8 @@ const BattleshipBoard = () => {
   };
 
   useEffect(() => {
-    setAiBoard(placeAllAIShips());
-  }, [])
+    setAiBoard(placeAllShips());
+  }, []);
 
   const initializeBoard = () => Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(null));
 
@@ -66,7 +66,7 @@ const BattleshipBoard = () => {
     }
   };
   
-  const placeAllAIShips = () => {
+  const placeAllShips = () => {
     const board = initializeBoard();
     ships.forEach(ship => {
       placeShip(board, ship);
@@ -85,23 +85,39 @@ const BattleshipBoard = () => {
         
         if (newBoard[row][col] !== null && isAlphabetical(newBoard[row][col]) || newBoard[row][col] === 2) {
           newBoard[row][col] = 2;
+
           return newBoard;
         }
-
-        newBoard[row][col] = 1;
-        
+        else if (newBoard[row][col] === 1) {
+          return newBoard;
+        }
+        else {
+          setCurrentPlayer(1);
+          handleAIMove();
+          newBoard[row][col] = 1;     
+        }
+   
         return newBoard;
       });
-      setCurrentPlayer(1);
-      handleAIMove();
     }
-  
   };
 
   const handleAIMove = () => {
-    setPlayerBoard(AILogic.getNextMove(playerBoard));
-    setCurrentPlayer(0);
+    setPlayerBoard(prevBoard => {
+      const wasLastMoveHit = { hit: false };
+      const newBoard = AILogic.getNextMove(prevBoard, wasLastMoveHit);
+      
+      if (wasLastMoveHit.hit) {
+        setCurrentPlayer(1);
+        setTimeout(() => handleAIMove(), 1000);
+      } else {
+        setCurrentPlayer(0); 
+      }
+  
+      return newBoard;
+    });
   };
+  
 
 
   const renderPlayerCell = (row, col) => {
@@ -112,7 +128,7 @@ const BattleshipBoard = () => {
           style={styles.cell}
           onPress={() => onCellPress(row, col, 0)}
         >
-          <Text>{playerBoard[row][col]}</Text>
+          <Text style={styles.whiteText}>{playerBoard[row][col]}</Text>
         </TouchableOpacity>);
       }
       else if(playerBoard[row][col] === 1) {
@@ -122,6 +138,7 @@ const BattleshipBoard = () => {
           style={styles.takenCell}
           onPress={() => onCellPress(row, col, 0)}
         >
+          <Text style={styles.x}>✖️</Text>
         </TouchableOpacity>);
       }
       else if(playerBoard[row][col] === 2) {
@@ -131,7 +148,7 @@ const BattleshipBoard = () => {
           style={styles.hitCell}
           onPress={() => onCellPress(row, col, 0)}
         >
-          <Text>X</Text>
+          <Text style={styles.x}>🔴</Text>
         </TouchableOpacity>);
       }
   };
@@ -153,6 +170,7 @@ const BattleshipBoard = () => {
           style={styles.takenCell}
           onPress={() => onCellPress(row, col, 1)}
         >
+          <Text style={styles.x}>✖️</Text>
         </TouchableOpacity>);
       }
       else if(aiBoard[row][col] === 2) {
@@ -162,7 +180,7 @@ const BattleshipBoard = () => {
           style={styles.hitCell}
           onPress={() => onCellPress(row, col, 1)}
         >
-          <Text>X</Text>
+          <Text style={styles.x}>🔴</Text>
         </TouchableOpacity>);
       }
   }
@@ -200,54 +218,87 @@ const BattleshipBoard = () => {
   }
 
   return (
-    <View style={styles.board}>
-      <Text>AI Board</Text>
+    <ImageBackground source={require('./wallpaper.png')} style={styles.container}>
+      <Text style={styles.boardTitle}>Ai BOARD</Text>
       {renderAiBoard()}
-      <Text>Your Board</Text>
+      <Text style={styles.boardTitle}>YOUR BOARD</Text>
       {!gameStarted && (
         <ShipPlacementModal
           onClose={toggleModal}
           playerBoard={playerBoard}
           setPlayerBoard={setPlayerBoard}
           ships={ships}
+          placeAllShips={placeAllShips}
         />
       )}
       {renderPlayerBoard()}
-    </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  whiteText:
+  {
+    color: 'white',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff', 
+    resizeMode: 'cover', // Ensure the image covers the entire container
   },
   board: {
+    flex: 1,
     flexDirection: 'column',
+    justifyContent: 'center', // Center horizontally
+    alignItems: 'center', // Center vertically
+    alignSelf: 'center', // Center horizontally within parent container
   },
   row: {
     flexDirection: 'row',
+    // borderWidth: 0.1,  // Add border width to create the inside borders
+    borderColor: '#686868',  // Add border color to match the cell borders
   },
   cell: {
     width: CELL_SIZE,
     height: CELL_SIZE,
-    borderWidth: 1,
-    borderColor: '#000',
+    borderWidth: 0.5,
+    borderColor: '#686868',
+    borderStyle: 'dotted',
+    alignItems: 'center', // Center vertically
+    
   },
   takenCell: {
     width: CELL_SIZE,
     height: CELL_SIZE,
-    borderWidth: 1,
-    backgroundColor: 'red',
+    borderWidth: 0.5,
+    borderColor: '#686868',
+    borderStyle: 'dotted',
+    // backgroundColor: '#0283c3',
+    alignItems: 'center', // Center vertically
   },
   hitCell: {
     width: CELL_SIZE,
     height: CELL_SIZE,
-    borderWidth: 1,
-    backgroundColor: 'blue',
-  }
+    borderWidth: 0.5,
+    borderColor: '#686868',
+    borderStyle: 'dotted',
+    backgroundColor: '#ff000030',
+  },
+  x: {
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: 'white',
+    textAlign: 'center', // Center horizontally
+    textAlignVertical: 'center', // Center vertically
+  },
+  boardTitle: {
+    fontSize: 23,
+    fontWeight: "bold",
+    marginTop: 10,
+    marginBottom: 9,
+    color: 'white',
+  },
 });
 
 export default BattleshipBoard;

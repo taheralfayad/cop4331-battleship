@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
-import { View, Modal, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
+import { View, Modal, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions, ScrollView } from 'react-native';
+
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
+
 
 const ships = [
   { name: "Carrier", size: 5 },
@@ -150,6 +154,7 @@ const ShipPlacementModal = ({ onClose, placeAllShips, setPlayerBoard, ships, vis
     >
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
+          <ScrollView style={styles.scrollViewStyle}>
           <Text style={styles.modalText}>Select a ship to place:</Text>
           <FlatList
             data={ships}
@@ -221,7 +226,7 @@ const ShipPlacementModal = ({ onClose, placeAllShips, setPlayerBoard, ships, vis
         >
           <Text style={styles.textStyle}>Close</Text>
         </TouchableOpacity>
-
+        </ScrollView>
         </View>
       </View>
     </Modal>
@@ -229,6 +234,15 @@ const ShipPlacementModal = ({ onClose, placeAllShips, setPlayerBoard, ships, vis
 };
 
 const styles = StyleSheet.create({
+  button: {
+    padding: 10, 
+    minWidth: 100,
+    marginVertical: 5,
+    borderRadius: 5,
+    backgroundColor: "#2196F3",
+    alignItems: "center",
+  },
+  
 placedShip: {
   backgroundColor: "#f0f0f0",
   borderColor: 'white', 
@@ -251,13 +265,12 @@ selectedShip: {
     alignItems: "center",
   },
   modalView: {
-    position: 'sticky',
-    top: 20, // Adjust as needed
-    left: 20, // Adjust as needed
+    width: '90%', // This assumes that the modal should take up 90% of the screen width
+    maxHeight: '90%', // Consider the maximum height as well
     justifyContent: "center",
     backgroundColor: "white",
     borderRadius: 20,
-    padding: 40,
+    padding: 20, // Make sure this padding isn't causing the content to squeeze out
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
@@ -268,6 +281,8 @@ selectedShip: {
     shadowRadius: 4,
     elevation: 5
   },
+  
+  
   modalText: {
     marginBottom: 15,
     textAlign: "center"
@@ -279,15 +294,15 @@ selectedShip: {
     borderRadius: 5
   },
   square: {
-    width: 30,
-    height: 30,
+    width: (windowWidth * 0.9 - 60) / 10 - 6, // This accounts for modal padding and square margins
+    height: (windowWidth * 0.9 - 60) / 10 - 6, // Same height as width for square cells
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ccc',
     margin: 3,
-    color: 'white',
   },
+  
   orientationContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -324,6 +339,15 @@ selectedShip: {
   occupiedSquare: {
     backgroundColor: "#808080",
   },
+  shipListContainer: {
+    maxHeight: windowHeight * 0.3, 
+    width: '100%',
+  },
+  squareGrid: {
+    width: '100%',
+    maxHeight: (windowWidth * 0.9 - 60) / 10 * 10 + 30, // This formula ensures that it scales with the square size
+  },
+  
 
 });
 

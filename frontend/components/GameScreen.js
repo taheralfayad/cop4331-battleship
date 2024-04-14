@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text, TouchableNativeFeedback, ImageBackground } from 'react-native';
 import ShipPlacementModal from './shipPlacementModal';
 import AIManager from './AIManager';
-import { set } from 'mongoose';
 
 const BOARD_SIZE = 10;
 const CELL_SIZE = 27;
@@ -169,8 +168,9 @@ const BattleshipBoard = () => {
 };
 
 const handleAIMove = () => {
+  const wasLastMoveHit = { hit: false, row: null, col: null };
+
   setPlayerBoard(prevBoard => {
-      const wasLastMoveHit = { hit: false, row: null, col: null };
       const newBoard = AILogic.getNextMove(prevBoard, wasLastMoveHit);
       
       if (wasLastMoveHit.hit) {
@@ -328,8 +328,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    width: '100%', // Ensure the container is full-width
+    height: '100%', // Ensure the container is full-height
     resizeMode: 'cover', // Ensure the image covers the entire container
   },
+  
   board: {
     flex: 1,
     flexDirection: 'column',

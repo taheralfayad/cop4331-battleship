@@ -161,7 +161,6 @@ const BattleshipBoard = () => {
                 setCurrentPlayer(1);
                 setTimeout(() => handleAIMove(), 1000);
             }
-
             return newBoard;
         });
     }
@@ -191,17 +190,17 @@ const handleAIMove = () => {
           }
 
           setCurrentPlayer(1);
+          if(currentPlayer == 1)
+          {
+            <Text style={styles.boardTitle}>Ai Turn</Text>
+          }
           setTimeout(() => handleAIMove(), 1000);
       } else {
           setCurrentPlayer(0);
       }
-
       return newBoard;
   });
 };
-
-  
-
 
   const renderPlayerCell = (row, col) => {
     if(playerBoard[row][col] === null || isAlphabetical(playerBoard[row][col])) {
@@ -302,6 +301,9 @@ const handleAIMove = () => {
 
   return (
     <ImageBackground source={require('./wallpaper.png')} style={styles.container}>
+      <Text style={currentPlayer === 0 ? styles.yourTurn : styles.aiTurn}>
+        {currentPlayer === 0 ? "🔵 YOUR TURN" : "🔴 AI'S TURN"}
+      </Text>
       <Text style={styles.boardTitle}>Ai BOARD</Text>
       {renderAiBoard()}
       <Text style={styles.boardTitle}>YOUR BOARD</Text>
@@ -342,7 +344,6 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    // borderWidth: 0.1,  // Add border width to create the inside borders
     borderColor: '#686868',  // Add border color to match the cell borders
   },
   cell: {
@@ -360,7 +361,6 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: '#686868',
     borderStyle: 'dotted',
-    // backgroundColor: '#0283c3',
     alignItems: 'center', // Center vertically
   },
   hitCell: {
@@ -372,18 +372,57 @@ const styles = StyleSheet.create({
     backgroundColor: '#ff000030',
   },
   x: {
-    fontSize: 17,
+    fontSize: 15,
     fontWeight: 'bold',
     color: 'white',
     textAlign: 'center', // Center horizontally
     textAlignVertical: 'center', // Center vertically
   },
   boardTitle: {
-    fontSize: 23,
+    fontSize: 21,
     fontWeight: "bold",
-    marginTop: 10,
-    marginBottom: 9,
+    marginTop: 19,
+    marginBottom: 6,
     color: 'white',
+  },
+  yourTurn: {
+
+    fontSize: 20,
+    fontWeight: 'bold',
+    textShadowColor: 'rgba(0, 0, 0, 1)', // shadow color
+    textShadowOffset: { width: 2, height: 2 }, // shadow offset
+    textShadowRadius: 2, // shadow radius   
+    textAlignVertical: 'center', // Center vertically
+    textAlign: 'center',
+    color: 'white',
+    width: '50%',
+    padding: 9,
+    marginTop: 0,
+    marginBottom: 1,
+    backgroundColor: '#00488150',
+    borderRadius: 70,
+    borderWidth: 1,
+    borderColor: 'white',
+    borderStyle: 'dotted',
+  },
+  aiTurn: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textShadowColor: 'rgba(0, 0, 0, 1)', // shadow color
+    textShadowOffset: { width: 2, height: 2 }, // shadow offset
+    textShadowRadius: 2, // shadow radius
+    textAlignVertical: 'center', // Center vertically
+    textAlign: 'center',
+    color: 'white',
+    width: '50%',
+    padding: 9,
+    marginTop: 0,
+    marginBottom: 1,
+    backgroundColor: '#e8122450',
+    borderRadius: 70,
+    borderWidth: 1,
+    borderColor: 'white',
+    borderStyle: 'dotted',
   },
 });
 

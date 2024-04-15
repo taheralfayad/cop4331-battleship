@@ -34,7 +34,15 @@ const UserSchema = new mongoose.Schema({
       type: String,
       required: true
     },
-    score: {
+    wins: {
+      type: Number,
+      default: 0
+    },
+    losses: {
+      type: Number,
+      default: 0
+    },
+    shipsSunk: {
       type: Number,
       default: 0
     }
@@ -76,7 +84,9 @@ router.post('/register', async (req, res) => {
         username: req.body.username,
         password: pass,
         email: req.body.email,
-        score: req.body.score || 0
+        wins: 0,
+        losses: 0,
+        shipsSunk: 0
       });
   
       const newUser = await user.save();
@@ -85,5 +95,31 @@ router.post('/register', async (req, res) => {
       res.status(400).json({ message: err.message });
     }
   });
+
+
+  router.post('/update', async (req, res) => {
+    try {
+      const { username, wins, losses, shipsSunk } = req.body;
+  
+      if (!username || wins == undefined || losses == undefined || shipsSunk == undefined) {
+        return res.status(400).json({ message: 'Missing fields in request body' });
+      }
+  
+      const updatedUser = await User.findOneAndUpdate(
+        { username: username },
+        { $set: { wins: wins, losses: losses, shipsSunk: shipsSunk }},
+        { new: true } 
+      );
+  
+      if (!updatedUser) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      res.json(updatedUser);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
 
 module.exports = router;

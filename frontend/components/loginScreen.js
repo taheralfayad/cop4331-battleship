@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, SafeAreaView } from 'react-native';
 
-export default function LoginScreen({ setLoggedIn }) {
+export default function LoginScreen({ setUser, setLoggedIn }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [registerName, setRegisterName] = useState('');
@@ -10,7 +10,7 @@ export default function LoginScreen({ setLoggedIn }) {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/users/login', {
+      const response = await fetch('https://760a-69-244-243-74.ngrok-free.app/api/users/login/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -18,6 +18,7 @@ export default function LoginScreen({ setLoggedIn }) {
         body: JSON.stringify({ username, password }), 
       });
       const data = await response.json();
+      setUser(data);
       if (response.ok && data) {
         setLoggedIn(true);
       } else {
@@ -31,7 +32,7 @@ export default function LoginScreen({ setLoggedIn }) {
 
   const handleRegister = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/users/register', {
+      const response = await fetch('https://760a-69-244-243-74.ngrok-free.app/api/users/register/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -39,6 +40,7 @@ export default function LoginScreen({ setLoggedIn }) {
         body: JSON.stringify({ username: registerName, password: registerPassword, email: registerEmail }),
       });
       const data = await response.json();
+      setUser(data);
       if (response.ok) {
         setLoggedIn(true);
       } else {

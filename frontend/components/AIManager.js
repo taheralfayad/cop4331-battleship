@@ -84,9 +84,11 @@ class AIManager {
             newBoard[newRow][newCol] = 2;
             this.lastHit = [newRow, newCol];
             this.onThread.hit = true;
-            wasLastMoveHit.hit = true;
-            wasLastMoveHit.row = newRow;
-            wasLastMoveHit.col = newCol;
+            if(wasLastMoveHit) {
+                wasLastMoveHit.hit = true;
+                wasLastMoveHit.row = newRow;
+                wasLastMoveHit.col = newCol;
+            }
             this.onThread.length++;
         } else {
             newBoard[newRow][newCol] = 1;
@@ -147,9 +149,11 @@ class AIManager {
             newBoard[row][col] = 2;
             this.lastHit = [row, col];
             this.onThread.hit = true;
-            wasLastMoveHit.hit = true;
-            wasLastMoveHit.row = row;
-            wasLastMoveHit.col = col;
+            if(wasLastMoveHit) {
+                wasLastMoveHit.hit = true;
+                wasLastMoveHit.row = row;
+                wasLastMoveHit.col = col;
+            }
             this.onThread.origin = [row, col];
             this.onThread.length = 1;
             return newBoard;

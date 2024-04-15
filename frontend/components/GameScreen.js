@@ -16,7 +16,7 @@ const ships = [
 
 const AILogic = new AIManager(BOARD_SIZE);
 
-const BattleshipBoard = () => {
+const BattleshipBoard = ({user, setUser}) => {
   const [playerBoard, setPlayerBoard] = useState(Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(null)));
   const [aiBoard, setAiBoard] = useState(Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(null)));
   const [currentPlayer, setCurrentPlayer] = useState(0);
@@ -56,23 +56,64 @@ const BattleshipBoard = () => {
         });
     }
 }
+
+const calculateSunkShips = () => {
+  let sunkShips = 0;
+  aiShips.forEach(ship => { 
+    if (ship.hits === ship.size) {
+      sunkShips++;
+    }
+  });
+  return sunkShips;
+};
   
 
   const checkGameOver = () => {
     if (allShipsSunk(playerShips)) {
       alert('AI Wins!');
+      sendGameResult('lose', calculateSunkShips());
       setGameStarted(false);
       setAiBoard(placeAllShips());
       setPlayerShips(ships.map(ship => ({ ...ship })));
       setAiShips(ships.map(ship => ({ ...ship })));
     } else if (allShipsSunk(aiShips)) {
       alert('Player Wins!');
+      sendGameResult('win', 5);
       setGameStarted(false);
       setAiBoard(placeAllShips());
       setPlayerShips(ships.map(ship => ({ ...ship })));
       setAiShips(ships.map(ship => ({ ...ship })));
     }
   };
+
+  const sendGameResult = async (winOrLose, shipsSunk) => {
+    if(winOrLose === 'win') {
+      body = JSON.stringify({ username: user.username, wins: user.wins + 1, losses: user.losses, shipsSunk: user.shipsSunk + shipsSunk });
+    } else {
+      body = JSON.stringify({ username: user.username, wins: user.wins, losses: user.losses + 1, shipsSunk: user.shipsSunk + shipsSunk });
+    }
+
+    try {
+      const response = await fetch('https://760a-69-244-243-74.ngrok-free.app/api/users/update/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: body,
+      });
+      const data = await response.json();
+      if (response.ok) {
+        console.log('Game result sent successfully');
+      } else {
+        console.error('Failed to send game result:', data.message);
+      }
+
+      setUser({ ...user, wins: winOrLose === 'win' ? user.wins + 1 : user.wins, losses: winOrLose === 'lose' ? user.losses + 1 : user.losses, shipsSunk: user.shipsSunk + shipsSunk });
+    } catch (error) {
+      console.error('Error sending game result:', error);
+    }
+  };
+    
   
 
   const toggleModal = () => {
@@ -243,6 +284,7 @@ const handleAIMove = () => {
           style={styles.cell}
           onPress={() => onCellPress(row, col, 1)}
         >
+          <Text style={styles.whiteText}>{aiBoard[row][col]}</Text>
         </TouchableOpacity>);
       }
       else if(aiBoard[row][col] === 1) {

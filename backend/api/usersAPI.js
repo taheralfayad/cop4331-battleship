@@ -2,6 +2,8 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+const sha256 = require('js-sha256');
+
 require('dotenv').config(); // Load environment variables
 
 // Connect to MongoDB
@@ -46,8 +48,8 @@ const User = mongoose.model('User', UserSchema, 'Users');
 // Retrieve requested user
 router.post('/login', async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const user = await User.findOne({ username: username, password: password });
+    const { username, password } = (req.body);
+    const user = await User.findOne({ username: username, password: sha256(password) });
     
     if (!user) {
       return res.status(401).json({ message: "Invalid username or password" });
@@ -67,11 +69,12 @@ router.post('/register', async (req, res) => {
       if (existingUser) {
         return res.status(400).json({ message: 'Username already exists' });
       }
-  
+      // Hash Password
+      const pass = sha256(req.body.password)
       // Create a new user
       const user = new User({
         username: req.body.username,
-        password: req.body.password,
+        password: pass,
         email: req.body.email,
         score: req.body.score || 0
       });

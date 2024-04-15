@@ -44,11 +44,15 @@ const User = mongoose.model('User', UserSchema, 'Users');
 // API endpoints
 
 // Retrieve requested user
-router.get('/login', async (req, res) => {
+router.post('/login', async (req, res) => {
   try {
-    const username = req.query.username;
-    const password = req.query.password;
+    const { username, password } = req.body;
     const user = await User.findOne({ username: username, password: password });
+    
+    if (!user) {
+      return res.status(401).json({ message: "Invalid username or password" });
+    }
+
     res.json(user);
     console.log(user);
   } catch (err) {

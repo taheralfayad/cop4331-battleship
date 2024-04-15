@@ -10,7 +10,7 @@ export default function LoginScreen({ setUser, setLoggedIn }) {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('https://760a-69-244-243-74.ngrok-free.app/api/users/login/', {
+      const response = await fetch('http://localhost:3000/api/users/login/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -32,7 +32,7 @@ export default function LoginScreen({ setUser, setLoggedIn }) {
 
   const handleRegister = async () => {
     try {
-      const response = await fetch('https://760a-69-244-243-74.ngrok-free.app/api/users/register/', {
+      const response = await fetch('https://localhost:3000/api/users/register/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

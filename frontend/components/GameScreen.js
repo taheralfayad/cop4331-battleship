@@ -94,7 +94,7 @@ const calculateSunkShips = () => {
     }
 
     try {
-      const response = await fetch('https://760a-69-244-243-74.ngrok-free.app/api/users/update/', {
+      const response = await fetch('http://localhost:3000/api/users/update/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -284,7 +284,6 @@ const handleAIMove = () => {
           style={styles.cell}
           onPress={() => onCellPress(row, col, 1)}
         >
-          <Text style={styles.whiteText}>{aiBoard[row][col]}</Text>
         </TouchableOpacity>);
       }
       else if(aiBoard[row][col] === 1) {

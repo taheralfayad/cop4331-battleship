@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, SafeAreaView } from 'react-native';
+import { KeyboardAvoidingView, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, SafeAreaView } from 'react-native';
 
 export default function LoginScreen({ setUser, setLoggedIn }) {
   const [username, setUsername] = useState('');
@@ -53,57 +53,63 @@ export default function LoginScreen({ setUser, setLoggedIn }) {
   };
 
   return (
-    <ImageBackground source={require('./wallpaper.png')} style={styles.background}>  
-      <SafeAreaView style={styles.container}>
-        <Text style={styles.appTitle}>BATTLESHIP</Text>
-        <Text style={styles.boardTitle}>Login</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Username"
-          value={username}
-          onChangeText={setUsername}
-          placeholderTextColor={'white'}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          secureTextEntry={true}
-          value={password}
-          onChangeText={setPassword}
-          placeholderTextColor={'white'}
-        />
-        <TouchableOpacity style={[styles.button, styles.loginButton]} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
-        <Text style={styles.orDivider}>————  or  ————</Text>
-        <Text style={styles.boardTitle}>Register</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Username"
-          value={registerName}
-          onChangeText={setRegisterName}
-          placeholderTextColor={'white'}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          secureTextEntry={true}
-          value={registerPassword}
-          onChangeText={setRegisterPassword}
-          placeholderTextColor={'white'}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={registerEmail}
-          onChangeText={setRegisterEmail}
-          placeholderTextColor={'white'}
-        />
-        <TouchableOpacity style={[styles.button, styles.registerButton]} onPress={handleRegister}>
-          <Text style={styles.buttonText}>Register</Text>
-        </TouchableOpacity>
- 
-      </SafeAreaView>
+    <ImageBackground source={require('./wallpaper.png')} style={styles.background}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
+      >
+        <SafeAreaView style={styles.container}>
+          <Text style={styles.appTitle}>BATTLESHIP</Text>
+          <Text style={styles.boardTitle}>Login</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Username"
+            value={username}
+            onChangeText={setUsername}
+            placeholderTextColor={'white'}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            secureTextEntry={true}
+            value={password}
+            onChangeText={setPassword}
+            placeholderTextColor={'white'}
+          />
+          <TouchableOpacity style={[styles.button, styles.loginButton]} onPress={handleLogin}>
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+          <Text style={styles.orDivider}>————  or  ————</Text>
+          <Text style={styles.boardTitle}>Register</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Username"
+            value={registerName}
+            onChangeText={setRegisterName}
+            placeholderTextColor={'white'}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            secureTextEntry={true}
+            value={registerPassword}
+            onChangeText={setRegisterPassword}
+            placeholderTextColor={'white'}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            value={registerEmail}
+            onChangeText={setRegisterEmail}
+            placeholderTextColor={'white'}
+          />
+          <TouchableOpacity style={[styles.button, styles.registerButton]} onPress={handleRegister}>
+            <Text style={styles.buttonText}>Register</Text>
+          </TouchableOpacity>
+  
+        </SafeAreaView>
+      </KeyboardAvoidingView>
     </ImageBackground>
   );
 }

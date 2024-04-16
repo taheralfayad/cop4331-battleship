@@ -345,7 +345,7 @@ const handleAIMove = () => {
       <Text style={currentPlayer === 0 ? styles.yourTurn : styles.aiTurn}>
         {currentPlayer === 0 ? "🔵 YOUR TURN" : "🔴 AI'S TURN"}
       </Text>
-      <Text style={styles.boardTitle}>Ai BOARD</Text>
+      <Text style={styles.boardTitle}>AI BOARD</Text>
       {renderAiBoard()}
       <Text style={styles.boardTitle}>YOUR BOARD</Text>
       {!gameStarted && (
@@ -430,40 +430,42 @@ const styles = StyleSheet.create({
 
     fontSize: 20,
     fontWeight: 'bold',
-    textShadowColor: 'rgba(0, 0, 0, 1)', // shadow color
-    textShadowOffset: { width: 2, height: 2 }, // shadow offset
-    textShadowRadius: 2, // shadow radius   
+    // textShadowColor: 'rgba(0, 0, 0, 1)', // shadow color
+    // textShadowOffset: { width: 2, height: 2 }, // shadow offset
+    // textShadowRadius: 2, // shadow radius   
     textAlignVertical: 'center', // Center vertically
     textAlign: 'center',
+    overflow: 'hidden',
     color: 'white',
-    width: '50%',
+    width: '70%',
     padding: 9,
     marginTop: 0,
     marginBottom: 1,
     backgroundColor: '#00488150',
-    borderRadius: 70,
+    borderRadius: 21,
     borderWidth: 1,
     borderColor: 'white',
-    borderStyle: 'dotted',
+    // borderStyle: 'dotted',
   },
   aiTurn: {
     fontSize: 20,
     fontWeight: 'bold',
-    textShadowColor: 'rgba(0, 0, 0, 1)', // shadow color
-    textShadowOffset: { width: 2, height: 2 }, // shadow offset
-    textShadowRadius: 2, // shadow radius
+    // textShadowColor: 'rgba(0, 0, 0, 1)', // shadow color
+    // textShadowOffset: { width: 2, height: 2 }, // shadow offset
+    // textShadowRadius: 2, // shadow radius
     textAlignVertical: 'center', // Center vertically
     textAlign: 'center',
+    overflow: 'hidden',
     color: 'white',
-    width: '50%',
+    width: '70%',
     padding: 9,
     marginTop: 0,
     marginBottom: 1,
     backgroundColor: '#e8122450',
-    borderRadius: 70,
+    borderRadius: 21,
     borderWidth: 1,
     borderColor: 'white',
-    borderStyle: 'dotted',
+    // borderStyle: 'dotted',
   },
 });
 

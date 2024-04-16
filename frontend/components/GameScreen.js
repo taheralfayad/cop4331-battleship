@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, TouchableNativeFeedback, ImageBackground } from 'react-native';
+import { Button, View, StyleSheet, TouchableOpacity, Text, TouchableNativeFeedback, ImageBackground } from 'react-native';
 import ShipPlacementModal from './shipPlacementModal';
 import AIManager from './AIManager';
 
@@ -16,7 +16,7 @@ const ships = [
 
 const AILogic = new AIManager(BOARD_SIZE);
 
-const BattleshipBoard = ({user, setUser}) => {
+const BattleshipBoard = ({setLoggedIn, user, setUser}) => {
   const [playerBoard, setPlayerBoard] = useState(Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(null)));
   const [aiBoard, setAiBoard] = useState(Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(null)));
   const [currentPlayer, setCurrentPlayer] = useState(0);
@@ -29,6 +29,12 @@ const BattleshipBoard = ({user, setUser}) => {
       checkGameOver();
     }
   }, [playerShips, aiShips]);
+
+
+  const handleSignOut = () => {
+    setUser(null);
+    setLoggedIn(false);
+  };
 
   const allShipsSunk = (ships) => {
     return ships.every(ship => ship.hits >= ship.size);
@@ -342,6 +348,9 @@ const handleAIMove = () => {
 
   return (
     <ImageBackground source={require('./wallpaper.png')} style={styles.container}>
+      <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+        <Text style={styles.signOutButtonText}>Sign Out</Text>
+      </TouchableOpacity>
       <Text style={currentPlayer === 0 ? styles.yourTurn : styles.aiTurn}>
         {currentPlayer === 0 ? "🔵 YOUR TURN" : "🔴 AI'S TURN"}
       </Text>
@@ -466,6 +475,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'white',
     // borderStyle: 'dotted',
+  },
+  signOutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#D32F2F',
+    padding: 10,
+    borderRadius: 5,
+    margin: 10
+  },
+  signOutButtonText: {
+    color: 'white',
+    marginLeft: 10,
+    fontSize: 16,
+    fontWeight: 'bold'
   },
 });
 

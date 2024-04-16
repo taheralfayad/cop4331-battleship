@@ -16,7 +16,13 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      {loggedIn ? <GameScreen user={user} setUser={setUser} /> : <LoginScreen setUser={setUser} setLoggedIn={setLoggedIn} />}
+      {loggedIn ? (
+        <>
+          <GameScreen setLoggedIn={setLoggedIn} user={user} setUser={setUser} />
+        </>
+      ) : (
+        <LoginScreen setUser={setUser} setLoggedIn={setLoggedIn} />
+      )}
     </View>
   );
 }

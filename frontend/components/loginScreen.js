@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, SafeAreaView } from 'react-native';
+import { Platform, KeyboardAvoidingView, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, SafeAreaView } from 'react-native';
 
 export default function LoginScreen({ setUser, setLoggedIn }) {
   const [username, setUsername] = useState('');
@@ -32,7 +32,7 @@ export default function LoginScreen({ setUser, setLoggedIn }) {
 
   const handleRegister = async () => {
     try {
-      const response = await fetch('https://localhost:3000/api/users/register/', {
+      const response = await fetch('http://localhost:3000/api/users/register/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

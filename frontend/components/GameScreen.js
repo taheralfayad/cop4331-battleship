@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Button, View, StyleSheet, TouchableOpacity, Text, TouchableNativeFeedback, ImageBackground } from 'react-native';
+import { Button, View, StyleSheet, TouchableOpacity, Text, TouchableNativeFeedback, ImageBackground, Modal } from 'react-native';
 import ShipPlacementModal from './shipPlacementModal';
+import  Leaderboard  from './leaderboard';
+
 import AIManager from './AIManager';
 
 const BOARD_SIZE = 10;
@@ -24,6 +26,8 @@ const BattleshipBoard = ({setLoggedIn, user, setUser}) => {
   const [aiShips, setAiShips] = useState(ships.map(ship => ({ ...ship })));
   const [aiDifficulty, setAiDifficulty] = useState(1); // 0 = easy, 1 = medium, 2 = hard
   const [gameStarted, setGameStarted] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showLeaderboardModal, setShowLeaderboardModal] = useState(false);
 
   useEffect(() => {
     if (gameStarted) {
@@ -79,6 +83,7 @@ const calculateSunkShips = () => {
     if (allShipsSunk(playerShips)) {
       alert('AI Wins!');
       sendGameResult('lose', calculateSunkShips());
+      setShowLeaderboardModal(true);
       setGameStarted(false);
       setAiBoard(placeAllShips());
       setPlayerShips(ships.map(ship => ({ ...ship })));
@@ -86,13 +91,14 @@ const calculateSunkShips = () => {
     } else if (allShipsSunk(aiShips)) {
       alert('Player Wins!');
       sendGameResult('win', 5);
+      setShowLeaderboardModal(true);
       setGameStarted(false);
       setAiBoard(placeAllShips());
       setPlayerShips(ships.map(ship => ({ ...ship })));
       setAiShips(ships.map(ship => ({ ...ship })));
     }
   };
-
+  let body = null;
   const sendGameResult = async (winOrLose, shipsSunk) => {
     if(winOrLose === 'win') {
       body = JSON.stringify({ username: user.username, wins: user.wins + 1, losses: user.losses, shipsSunk: user.shipsSunk + shipsSunk });
@@ -101,7 +107,8 @@ const calculateSunkShips = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/users/update/', {
+      console.log("TRYNA UPDATE FOOL")
+      const response = await fetch('https://5588-208-64-158-97.ngrok-free.app/api/users/update/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -114,8 +121,8 @@ const calculateSunkShips = () => {
       } else {
         console.error('Failed to send game result:', data.message);
       }
-
-      setUser({ ...user, wins: winOrLose === 'win' ? user.wins + 1 : user.wins, losses: winOrLose === 'lose' ? user.losses + 1 : user.losses, shipsSunk: user.shipsSunk + shipsSunk });
+      console.log("SETTING USER", user)
+      setUser({ ...user, wins: winOrLose === 'win' ? user.wins + 1 : user.wins, losses: winOrLose === 'lose' ? user.losses + 1 : user.losses, shipsSunk: user.shipsSunk + shipsSunk, score: ((user.wins-user.losses)+user.shipsSunk/100)*100});
     } catch (error) {
       console.error('Error sending game result:', error);
     }
@@ -371,6 +378,19 @@ const handleAIMove = () => {
         />  
       )}
       {renderPlayerBoard()}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showLeaderboardModal}
+        onRequestClose={() => setShowLeaderboardModal(false)}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Leaderboard />
+            <Button title="Close" onPress={() => setShowLeaderboardModal(false)} />
+          </View>
+        </View>
+      </Modal>
     </ImageBackground>
   );
 };

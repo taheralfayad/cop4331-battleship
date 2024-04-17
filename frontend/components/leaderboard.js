@@ -1,139 +1,117 @@
-// Leaderboard.js - Version #18
-// Changes Made:
-// - Further adjusted font sizes, padding, and styling for better visibility.
-
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, FlatList, Dimensions } from 'react-native';
 
 const Leaderboard = () => {
-  const hardcodedLeaderboardData = [
-    { username: 'You', rank: 1, wins: 10, losses: 5, shipsSunk: 30, shipsLost: 10 },
-    { username: 'Ai', rank: 2, wins: 8, losses: 7, shipsSunk: 25, shipsLost: 15 },
-    // Add more entries as needed
-  ];
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const retrieveTopUsers = async () => {
+      try {
+        const response = await fetch('https://5588-208-64-158-97.ngrok-free.app/api/users/leaderboard');
+        const data = await response.json();
+        setUsers(data);
+      } catch (error) {
+        console.error('Error retrieving leaderboard:', error);
+      }
+    };
+
+    retrieveTopUsers();
+  }, []);
+
+  const renderUserItem = ({ item, index }) => {
+    return (
+      <View style={styles.userContainer}>
+        <Text style={styles.rank}>{index + 1}.</Text>
+        <Text style={styles.username}>{item.username}</Text>
+        <Text style={styles.stat}>{item.wins}</Text>
+        <Text style={styles.stat}>{item.losses}</Text>
+        <Text style={styles.stat}>{item.shipsSunk}</Text>
+        <Text style={styles.stat}>{item.score}</Text>
+      </View>
+    );
+  };
 
   return (
-    <ScrollView contentContainerStyle={styles.leaderboardContainer}>
-      {/* LEADERBOARD HEADER */}
-      <View style={styles.header}>
-        <Text style={styles.headerText}>LEADERBOARD</Text>
-      </View>
-
-      {/* TABLE CONTAINER */}
-      <View style={styles.tableContainer}>
-        {/* HEADER ROW */}
-        <View style={styles.headerRow}>
-          <Text style={styles.headerCell}></Text>
-          <Text style={styles.headerRowsStyle}>YOU</Text>
-          <Text style={styles.headerRowsStyle}>AI    </Text>
+    <View style={styles.container}>
+      <ScrollView style={styles.scrollViewStyle}>
+        <Text style={styles.title}>Leaderboard</Text>
+        <View style={styles.leaderboard}>
+          <View style={styles.headerContainer}>
+            <Text style={styles.header}>Rank</Text>
+            <Text style={styles.header}>Username</Text>
+            <Text style={styles.header}>Wins</Text>
+            <Text style={styles.header}>Losses</Text>
+            <Text style={styles.header}>Ships Sunk</Text>
+            <Text style={styles.header}>Score</Text>
+          </View>
+          {users.length === 0 && <Text>Loading...</Text>}
+          <FlatList
+            data={users}
+            renderItem={renderUserItem}
+            keyExtractor={(item, index) => index.toString()}
+          />
         </View>
-
-        {/* RANKING ROW */}
-        <View style={[styles.row, styles.highlightRow]}>
-          <Text style={styles.cellTitle}>🏅 Rank</Text>
-          <Text style={styles.cell}>{hardcodedLeaderboardData[0].rank}</Text>
-          <Text style={styles.cell}>{hardcodedLeaderboardData[1].rank}</Text>
-        </View>
-
-        {/* WINS ROW */}
-        <View style={styles.row}>
-          <Text style={styles.cellTitle}>🏆 Games Won</Text>
-          <Text style={styles.cell}>{hardcodedLeaderboardData[0].wins}</Text>
-          <Text style={styles.cell}>{hardcodedLeaderboardData[1].wins}</Text>
-        </View>
-
-        {/* LOSSES ROW */}
-        <View style={[styles.row, styles.highlightRow]}>
-          <Text style={styles.cellTitle}>💔 Games Lost</Text>
-          <Text style={styles.cell}>{hardcodedLeaderboardData[0].losses}</Text>
-          <Text style={styles.cell}>{hardcodedLeaderboardData[1].losses}</Text>
-        </View>
-
-        {/* SHIPS SUNK ROW */}
-        <View style={styles.row}>
-          <Text style={styles.cellTitle}>
-            🎯 Ships Sunk
-          </Text>
-          <Text style={styles.cell}>{hardcodedLeaderboardData[0].shipsSunk}</Text>
-          <Text style={styles.cell}>{hardcodedLeaderboardData[1].shipsSunk}</Text>
-        </View>
-
-        {/* SHIPS LOST ROW */}
-        <View style={[styles.row, styles.highlightRow]}>
-          <Text style={styles.cellTitle}>
-            💥 Ships Lost
-          </Text>
-          <Text style={styles.cell}>{hardcodedLeaderboardData[0].shipsLost}</Text>
-          <Text style={styles.cell}>{hardcodedLeaderboardData[1].shipsLost}</Text>
-        </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
-// STYLES
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
+
 const styles = StyleSheet.create({
-  leaderboardContainer: {
+  container: {
     flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'darknavy', // Updated to dark navy blue
-  },
-  header: {
-    backgroundColor: 'grey',
-    padding: 20, // Increased padding
-    width: '100%',
     alignItems: 'center',
-    marginBottom: 15,
   },
-  headerText: {
-    fontSize: 32, // Further increased font size
+  scrollViewStyle: {
+    width: '100%',
+    height: '100%',
+  },
+  title: {
+    fontSize: 24,
     fontWeight: 'bold',
     color: 'white',
-  },
-  tableContainer: {
-    borderWidth: 2,
-    borderColor: 'white',
-    borderRadius: 10,
-    overflow: 'hidden',
-    width: '115%', // Full width of the screen
-  },
-  headerRowsStyle: {
-    flex: 1,
-    textAlign: 'right',
-    color: 'white',
-    fontSize: 22, // Further increased font size
-  },
-  headerRow: {
-    flexDirection: 'row',
-    backgroundColor: 'grey',
-    padding: 20, // Increased padding
-    justifyContent: 'space-around',
-  },
-  headerCell: {
-    flex: 1,
-    color: 'white',
+    marginBottom: 20,
     textAlign: 'center',
-    fontSize: 24, // Further increased font size
   },
-  row: {
+  leaderboard: {
+    width: windowWidth, 
+    height: windowHeight *.8,
+    padding: 10,
+    borderRadius: 0,
+    backgroundColor: '#ffffff',
+    elevation: 5, 
+  },
+  headerContainer: {
     flexDirection: 'row',
-    padding: 20, // Increased padding
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
+    marginBottom: 10,
   },
-  cellTitle: {
-    flex: 2, // Increased flex to make the column wider
-    textAlign: 'left',
-    fontSize: 19, // Adjusted font size
-    color: 'black', // Text color set to white
-  },
-  cell: {
+  header: {
+    fontSize: 16,
+    fontWeight: 'bold',
     flex: 1,
     textAlign: 'center',
-    fontSize: 21, // Further increased font size
   },
-  highlightRow: {
-    backgroundColor: 'rgba(169, 169, 169, 0.2)', // Transparent grey background
+  userContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  rank: {
+    flex: 1,
+    textAlign: 'center',
+  },
+  username: {
+    flex: 1,
+    textAlign: 'center',
+  },
+  stat: {
+    flex: 1,
+    textAlign: 'center',
   },
 });
 

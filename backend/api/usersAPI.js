@@ -45,6 +45,10 @@ const UserSchema = new mongoose.Schema({
     shipsSunk: {
       type: Number,
       default: 0
+    },
+    score: {
+      type: Number,
+      default: 0
     }
   });
 
@@ -86,7 +90,8 @@ router.post('/register', async (req, res) => {
         email: req.body.email,
         wins: 0,
         losses: 0,
-        shipsSunk: 0
+        shipsSunk: 0,
+        score: 0
       });
   
       const newUser = await user.save();
@@ -97,29 +102,40 @@ router.post('/register', async (req, res) => {
   });
 
 
-  router.post('/update', async (req, res) => {
-    try {
-      const { username, wins, losses, shipsSunk } = req.body;
-  
-      if (!username || wins == undefined || losses == undefined || shipsSunk == undefined) {
-        return res.status(400).json({ message: 'Missing fields in request body' });
-      }
-  
-      const updatedUser = await User.findOneAndUpdate(
-        { username: username },
-        { $set: { wins: wins, losses: losses, shipsSunk: shipsSunk }},
-        { new: true } 
-      );
-  
-      if (!updatedUser) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-  
-      res.json(updatedUser);
-    } catch (err) {
-      res.status(500).json({ message: err.message });
+router.post('/update', async (req, res) => {
+  try {
+    const { username, wins, losses, shipsSunk } = req.body;
+
+    if (!username || wins == undefined || losses == undefined || shipsSunk == undefined) {
+      return res.status(400).json({ message: 'Missing fields in request body' });
     }
-  });
+
+    const updatedUser = await User.findOneAndUpdate(
+      { username: username },
+      { $set: { wins: wins, losses: losses, shipsSunk: shipsSunk, score: ((wins-losses) + shipsSunk/100)* 100 } }, // Added closing parenthesis here
+      { new: true } 
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json(updatedUser);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Make a leaderboard endpoint which retrieves the top 10 users by score  
+router.get('/leaderboard', async (req, res) => {
+  try {
+    const users = await User.find().sort({ score: -1 }).limit(10);
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
 
 module.exports = router;
+ 

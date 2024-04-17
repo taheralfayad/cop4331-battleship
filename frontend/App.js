@@ -3,10 +3,13 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import LoginScreen from './components/loginScreen'; // Import your login screen component
 import GameScreen from './components/GameScreen'; // Import your game screen component
+import Leaderboard from './components/Leaderboard';
 
 export default function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [isGameStarted, setIsGameStarted] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -16,13 +19,15 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      {loggedIn ? (
+      {loggedIn && !showLeaderboard && isGameStarted ? (
         <>
-          <GameScreen setLoggedIn={setLoggedIn} user={user} setUser={setUser} />
+          <GameScreen setIsGameStarted={setIsGameStarted} setShowLeaderboard={setShowLeaderboard} setLoggedIn={setLoggedIn} user={user} setUser={setUser} />
         </>
-      ) : (
-        <LoginScreen setUser={setUser} setLoggedIn={setLoggedIn} />
-      )}
+      ) : null}
+      {!loggedIn && !showLeaderboard ? (
+        <LoginScreen setIsGameStarted={setIsGameStarted} setUser={setUser} setLoggedIn={setLoggedIn} />
+      ) : null}
+      {loggedIn && showLeaderboard && !isGameStarted && <Leaderboard setIsGameStarted={setIsGameStarted} setShowLeaderboard={setShowLeaderboard} setUser={setUser} setLoggedIn={setLoggedIn}/>}
     </View>
   );
 }

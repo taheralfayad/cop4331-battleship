@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, SafeAreaView } from 'react-native';
 
-export default function LoginScreen({ setUser, setLoggedIn }) {
+export default function LoginScreen({ setUser, setLoggedIn, setIsGameStarted }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [registerName, setRegisterName] = useState('');
@@ -10,7 +10,7 @@ export default function LoginScreen({ setUser, setLoggedIn }) {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/users/login/', {
+      const response = await fetch('https://9a9b-132-170-253-63.ngrok-free.app/api/users/login/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -21,6 +21,7 @@ export default function LoginScreen({ setUser, setLoggedIn }) {
       setUser(data);
       if (response.ok && data) {
         setLoggedIn(true);
+        setIsGameStarted(true);
       } else {
         // Handle failed login (e.g., display error message)
         console.error('Login failed:', data.message);
@@ -32,7 +33,7 @@ export default function LoginScreen({ setUser, setLoggedIn }) {
 
   const handleRegister = async () => {
     try {
-      const response = await fetch('https://localhost:3000/api/users/register/', {
+      const response = await fetch('https://9a9b-132-170-253-63.ngrok-free.app/api/users/register/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -43,6 +44,7 @@ export default function LoginScreen({ setUser, setLoggedIn }) {
       setUser(data);
       if (response.ok) {
         setLoggedIn(true);
+        setIsGameStarted(true);
       } else {
         // Handle failed registration (e.g., display error message)
         console.error('Registration failed:', data.message);
@@ -54,11 +56,11 @@ export default function LoginScreen({ setUser, setLoggedIn }) {
 
   return (
     <ImageBackground source={require('./wallpaper.png')} style={styles.background}>
-      <KeyboardAvoidingView
+      {/* <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
-      >
+      > */}
         <SafeAreaView style={styles.container}>
           <Text style={styles.appTitle}>BATTLESHIP</Text>
           <Text style={styles.boardTitle}>Login</Text>
@@ -109,7 +111,7 @@ export default function LoginScreen({ setUser, setLoggedIn }) {
           </TouchableOpacity>
   
         </SafeAreaView>
-      </KeyboardAvoidingView>
+      {/* </KeyboardAvoidingView> */}
     </ImageBackground>
   );
 }

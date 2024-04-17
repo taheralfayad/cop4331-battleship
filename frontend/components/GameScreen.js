@@ -16,7 +16,7 @@ const ships = [
 
 const AILogic = new AIManager(BOARD_SIZE);
 
-const BattleshipBoard = ({setLoggedIn, user, setUser}) => {
+const BattleshipBoard = ({setLoggedIn, user, setUser, setShowLeaderboard, setIsGameStarted}) => {
   const [playerBoard, setPlayerBoard] = useState(Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(null)));
   const [aiBoard, setAiBoard] = useState(Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(null)));
   const [currentPlayer, setCurrentPlayer] = useState(0);
@@ -100,7 +100,7 @@ const calculateSunkShips = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/users/update/', {
+      const response = await fetch('https://9a9b-132-170-253-63.ngrok-free.app/api/users/update/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -126,6 +126,10 @@ const calculateSunkShips = () => {
     setGameStarted(!gameStarted);
   };
 
+  const openLeaderboard = () => {
+    setShowLeaderboard(true);
+    setIsGameStarted(false);
+  }
   useEffect(() => {
     setAiBoard(placeAllShips());
   }, []);
@@ -348,9 +352,14 @@ const handleAIMove = () => {
 
   return (
     <ImageBackground source={require('./wallpaper.png')} style={styles.container}>
-      <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-        <Text style={styles.signOutButtonText}>Sign Out</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonsContainer}>
+        <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+          <Text style={styles.signOutButtonText}>Sign Out</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.signOutButton} onPress={openLeaderboard}>
+          <Text style={styles.signOutButtonText}>Show Leaderboard</Text>
+        </TouchableOpacity>
+      </View>
       <Text style={currentPlayer === 0 ? styles.yourTurn : styles.aiTurn}>
         {currentPlayer === 0 ? "🔵 YOUR TURN" : "🔴 AI'S TURN"}
       </Text>
@@ -375,6 +384,11 @@ const styles = StyleSheet.create({
   whiteText:
   {
     color: 'white',
+  },
+  buttonsContainer: {
+    flexDirection: 'row',  // Aligns children (buttons) horizontally
+    justifyContent: 'space-around',  // Distributes children evenly with space around them
+    width: '100%',  
   },
   container: {
     flex: 1,

@@ -10,7 +10,7 @@ export default function LoginScreen({ setUser, setLoggedIn }) {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('https://5588-208-64-158-97.ngrok-free.app/api/users/login/', {
+      const response = await fetch('http://localhost:3000/api/users/login/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -31,6 +31,21 @@ export default function LoginScreen({ setUser, setLoggedIn }) {
   };
 
   const handleRegister = async () => {
+    if (registerName.length < 1) {
+      alert('Please enter a username');
+      return;
+    }
+
+    if (registerPassword.length < 6 || !/\d/.test(registerPassword)) {
+      alert('Password must be at least 6 characters and contain at least one number');
+      return;
+    }
+
+    if (!registerEmail.includes('@')) {
+      alert('Invalid email');
+      return;
+    }
+
     try {
       const response = await fetch('http://localhost:3000/api/users/register/', {
         method: 'POST',

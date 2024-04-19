@@ -426,11 +426,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#ff000030',
   },
   x: {
-    fontSize: 15,
+    fontSize: 20,
     fontWeight: 'bold',
     color: 'white',
     textAlign: 'center', // Center horizontally
     textAlignVertical: 'center', // Center vertically
+    height: '100%', // Ensure the text is full-height
   },
   boardTitle: {
     fontSize: 21,

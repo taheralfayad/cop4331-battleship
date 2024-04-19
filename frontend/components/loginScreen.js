@@ -24,14 +24,32 @@ export default function LoginScreen({ setUser, setLoggedIn }) {
       } else {
         // Handle failed login (e.g., display error message)
         console.error('Login failed:', data.message);
+        alert('Invalid username or password');
       }
     } catch (error) {
       console.error('Error during login:', error);
+      alert('Error during login:', error)
     }
   };
 
   const handleRegister = async () => {
     try {
+
+      if (registerName.length < 1 || registerPassword.length < 1 || registerEmail.length < 1) {
+        alert('Please fill out all fields');
+        return;
+      }
+
+      if (registerPassword.length < 6 || registerPassword.length > 20) {
+        alert('Password must be between 6 and 20 characters');
+        return;
+      }
+
+      if (!registerEmail.includes('@') || !registerEmail.includes('.')) {
+        alert('Invalid email address');
+        return;
+      }
+
       const response = await fetch('http://localhost:3000/api/users/register/', {
         method: 'POST',
         headers: {

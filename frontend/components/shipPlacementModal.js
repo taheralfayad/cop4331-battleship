@@ -18,7 +18,7 @@ const ships = [
   { name: "Destroyer", size: 2 },
 ];
 
-const ShipPlacementModal = ({ onClose, placeAllShips, setPlayerBoard, ships, visible}) => {
+const ShipPlacementModal = ({ onClose, placeAllShips, setPlayerBoard, ships, visible, aiDifficulty, setAiDifficulty}) => {
   const [selectedShip, setSelectedShip] = useState(null);
   const [orientation, setOrientation] = useState('horizontal');
   const [selectedSquare, setSelectedSquare] = useState(null);
@@ -160,6 +160,18 @@ const ShipPlacementModal = ({ onClose, placeAllShips, setPlayerBoard, ships, vis
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
           <ScrollView style={styles.scrollViewStyle}>
+            <View style={styles.difficultyContainer}>
+              <Text style={styles.modalText}>Select Difficulty:</Text>
+              <TouchableOpacity style={[styles.difficultyButton, aiDifficulty === 0 && styles.selectedDifficulty]} onPress={() => setAiDifficulty(0)}>
+                <Text>Easy</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.difficultyButton, aiDifficulty === 1 && styles.selectedDifficulty]} onPress={() => setAiDifficulty(1)}>
+                <Text>Medium</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.difficultyButton, aiDifficulty === 2 && styles.selectedDifficulty]} onPress={() => setAiDifficulty(2)}>
+                <Text>Hard</Text>
+              </TouchableOpacity>
+            </View>
           <Text style={styles.modalText}>Select a ship to place:</Text>
           <FlatList
             data={ships}
@@ -352,8 +364,23 @@ selectedShip: {
     width: '100%',
     maxHeight: (windowWidth * 0.9 - 60) / 10 * 10 + 30, // This formula ensures that it scales with the square size
   },
-  
 
+  difficultyContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  difficultyButton: {
+    backgroundColor: '#f0f0f0',
+    padding: 10,
+    marginVertical: 5,
+    borderRadius: 5,
+    width: '100%',
+    alignItems: 'center',
+  },
+  selectedDifficulty: {
+    backgroundColor: '#2196F3',
+  },
 });
+  
 
 export default ShipPlacementModal;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, SafeAreaView } from 'react-native';
+import { Platform, KeyboardAvoidingView, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, SafeAreaView } from 'react-native';
 
 export default function LoginScreen({ setUser, setLoggedIn, setIsGameStarted }) {
   const [username, setUsername] = useState('');

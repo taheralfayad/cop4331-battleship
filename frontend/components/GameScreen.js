@@ -22,6 +22,7 @@ const BattleshipBoard = ({setLoggedIn, user, setUser, setShowLeaderboard, setIsG
   const [currentPlayer, setCurrentPlayer] = useState(0);
   const [playerShips, setPlayerShips] = useState(ships.map(ship => ({ ...ship })));
   const [aiShips, setAiShips] = useState(ships.map(ship => ({ ...ship })));
+  const [aiDifficulty, setAiDifficulty] = useState(1); // 0 = easy, 1 = medium, 2 = hard
   const [gameStarted, setGameStarted] = useState(false);
 
   useEffect(() => {
@@ -123,6 +124,7 @@ const calculateSunkShips = () => {
   
 
   const toggleModal = () => {
+    AILogic.difficulty = aiDifficulty;
     setGameStarted(!gameStarted);
   };
 
@@ -373,7 +375,9 @@ const handleAIMove = () => {
           setPlayerBoard={setPlayerBoard}
           ships={ships}
           placeAllShips={placeAllShips}
-        />
+          aiDifficulty={aiDifficulty}
+          setAiDifficulty={setAiDifficulty}
+        />  
       )}
       {renderPlayerBoard()}
     </ImageBackground>

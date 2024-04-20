@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BASEURL } from '../config.js';
 import { Button, View, StyleSheet, TouchableOpacity, Text, TouchableNativeFeedback, ImageBackground } from 'react-native';
 import ShipPlacementModal from './shipPlacementModal';
 import AIManager from './AIManager';
@@ -101,7 +102,7 @@ const calculateSunkShips = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/users/update/', {
+      const response = await fetch(`${BASEURL}/api/users/update/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

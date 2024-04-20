@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { BASEURL } from '../config.js';
 import { Platform, KeyboardAvoidingView, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, SafeAreaView } from 'react-native';
 
 export default function LoginScreen({ setUser, setLoggedIn, setIsGameStarted }) {
@@ -9,8 +10,9 @@ export default function LoginScreen({ setUser, setLoggedIn, setIsGameStarted }) 
   const [registerEmail, setRegisterEmail] = useState('');
 
   const handleLogin = async () => {
+    console.log(`${BASEURL}/api/users/login/`);
     try {
-      const response = await fetch('https://9a9b-132-170-253-63.ngrok-free.app/api/users/login/', {
+      const response = await fetch(`${BASEURL}/api/users/login/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -25,15 +27,33 @@ export default function LoginScreen({ setUser, setLoggedIn, setIsGameStarted }) 
       } else {
         // Handle failed login (e.g., display error message)
         console.error('Login failed:', data.message);
+        alert('Invalid username or password');
       }
     } catch (error) {
       console.error('Error during login:', error);
+      alert('Error during login:', error)
     }
   };
 
   const handleRegister = async () => {
     try {
-      const response = await fetch('https://9a9b-132-170-253-63.ngrok-free.app/api/users/register/', {
+
+      if (registerName.length < 1 || registerPassword.length < 1 || registerEmail.length < 1) {
+        alert('Please fill out all fields');
+        return;
+      }
+
+      if (registerPassword.length < 6 || registerPassword.length > 20) {
+        alert('Password must be between 6 and 20 characters');
+        return;
+      }
+
+      if (!registerEmail.includes('@') || !registerEmail.includes('.')) {
+        alert('Invalid email address');
+        return;
+      }
+
+      const response = await fetch(`${BASEURL}/api/users/register/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

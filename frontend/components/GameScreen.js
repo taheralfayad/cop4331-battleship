@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BASEURL } from '../config.js';
 import { Button, View, StyleSheet, TouchableOpacity, Text, TouchableNativeFeedback, ImageBackground } from 'react-native';
 import ShipPlacementModal from './shipPlacementModal';
 import AIManager from './AIManager';
@@ -101,7 +102,7 @@ const calculateSunkShips = () => {
     }
 
     try {
-      const response = await fetch('https://9a9b-132-170-253-63.ngrok-free.app/api/users/update/', {
+      const response = await fetch(`${BASEURL}/api/users/update/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -440,11 +441,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#ff000030',
   },
   x: {
-    fontSize: 15,
+    fontSize: 20,
     fontWeight: 'bold',
     color: 'white',
     textAlign: 'center', // Center horizontally
     textAlignVertical: 'center', // Center vertically
+    height: '100%', // Ensure the text is full-height
   },
   boardTitle: {
     fontSize: 21,

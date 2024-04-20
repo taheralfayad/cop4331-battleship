@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, TouchableOpacity, Text, ImageBackground } from 'react-native';
 import { DataTable, Button } from 'react-native-paper';  // Import Button component
+import { BASEURL } from '../config.js';
 
 const Leaderboard = ({ setUser, setLoggedIn, setShowLeaderboard, setIsGameStarted }) => {
   const [users, setUsers] = useState([]);
@@ -10,7 +11,7 @@ const Leaderboard = ({ setUser, setLoggedIn, setShowLeaderboard, setIsGameStarte
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('http://9a9b-132-170-253-63.ngrok-free.app/api/users/leaderboard');
+        const response = await fetch(`${BASEURL}/api/users/leaderboard`);
         if (!response.ok) throw new Error('Failed to fetch: ' + response.status);
         const data = await response.json();
         data.sort((a, b) => b.wins - a.wins || b.shipsSunk - a.shipsSunk || b.losses - a.losses);
